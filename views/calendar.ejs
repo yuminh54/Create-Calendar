@@ -1,0 +1,178 @@
+<html>
+<head>
+<link rel="stylesheet" href="/stylesheets/calendar.css">
+
+<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+<link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.11.2/css/all.css" integrity="sha256-46qynGAkLSFpVbEBog43gvNhfrOj+BmwXdxFgVK/Kvc=" crossorigin="anonymous" />
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/tempusdominus-bootstrap-4/5.0.1/css/tempusdominus-bootstrap-4.min.css" />
+</head>
+<body>
+    <div class="calendar-container">
+        <div class="calendar-header">
+            <button id="today" class="btn btn-light">Today</button>
+            <div class="ico-arrow">
+                <a href="#" data-toggle="tooltip" data-placement="top" title="" data-original-title="이전">
+                    <i id="previous" class="material-icons">
+                        chevron_left
+                    </i>
+                </a>
+                <a href="#" data-toggle="tooltip" data-placement="top" title="" data-original-title="다음">
+                    <i id="next" class="material-icons">
+                        chevron_right
+                    </i>
+                </a>
+            </div>
+            <h4 id="currentMonth"></h4>
+            <ul class="nav nav-tabs view-tab" id="view" role="tablist">
+                <li class="nav-item">
+                    <a class="nav-link active" id="tab-month" data-toggle="tab" href="#month" role="tab" aria-controls="month" aria-selected="true">월</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" id="tab-day" data-toggle="tab" href="#day" role="tab" aria-controls="day" aria-selected="false">일</a>
+                </li>
+            </ul>
+        </div>
+        <div class="tab-content">
+            <div class="tab-pane active show" id="month" role="tabpanel" aria-labelledby="tab-month">
+                <div class="monthly-calendar">
+                </div>
+            </div>
+            <div class="tab-pane" id="day" role="tabpanel" aria-labelledby="tab-day">
+                <div class="daily-calendar"><span class="day-name">3일 화요일</span>
+                    <div class="event-consecutive event-start event-end" data-toggle="popover"
+                         data-html="true" data-placement="left" data-content='<div class="content-line"><div class="event-consecutive-marking"></div><div class="title"><h5>일정 1</h5><h7 class="reservation">2019년 9월 15일 – 17일</div>
+            </div><div class="content-line"><i class="material-icons">
+    notes
+    </i><div class="title"><h7 class="reservation">스케쥴 메모, 설명이 나타납니다.</div>'>연속 일정 1
+                    </div>
+                    <div class="event-consecutive event-start event-end" data-toggle="popover"
+                         data-html="true" data-placement="left" data-content='<div class="content-line"><div class="event-consecutive-marking"></div><div class="title"><h5>일정 1</h5><h7 class="reservation">2019년 9월 15일 – 17일</div>
+            </div><div class="content-line"><i class="material-icons">
+    notes
+    </i><div class="title"><h7 class="reservation">스케쥴 메모, 설명이 나타납니다.</div>'>연속 일정 2
+                    </div>
+                    <div class="event event-start event-end" data-toggle="popover"
+                         data-html="true" data-placement="left" data-content='<div class="content-line"><div class="event-marking"></div><div class="title"><h5>일정 1</h5><h7 class="reservation">2019년 9월 15일 – 17일<span class="reservation-time">⋅오후 2:00~ 3:00</span></div>
+            </div><div class="content-line"><i class="material-icons">
+    notes
+    </i><div class="title"><h7 class="reservation">스케쥴 메모, 설명이 나타납니다.</div>'>일반 일정 3
+                    </div>
+                    <div class="event-repeated event-start event-end" data-toggle="popover"
+                         data-html="true" data-placement="left" data-content='<div class="content-line"><div class="event-repeated-marking"></div><div class="title"><h5>일정 1</h5><h7 class="reservation">2019년 9월 15일 – 17일<span class="reservation-time">⋅오후 2:00~ 3:00</span><span class="repeat-message">⋅매월 반복</span></div>
+            </div><div class="content-line"><i class="material-icons">
+    notes
+    </i><div class="title"><h7 class="reservation">스케쥴 메모, 설명이 나타납니다.</div>'>반복 일정 1
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="modal fade" id="registerSchedule" tabindex="-1" role="dialog" aria-labelledby="registerScheduleLabel"
+         aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="registerScheduleLabel">일정 만들기</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <form>
+                        <div class="form-group">
+                            <label class="col-form-label">일정 제목</label>
+                            <input type="text" class="form-control" id="recipient-name">
+                        </div>
+                        <div class="form-group">
+                            <label for="message-text" class="col-form-label">일정 설명</label>
+                            <textarea class="form-control" id="message-text"></textarea>
+                        </div>
+                        <div class="form-row">
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label class="col-form-label">일정 시작 날짜</label>
+                                    <div class="input-group date" id="datetimepicker1" data-target-input="nearest">
+                                        <input type="text" class="form-control datetimepicker-input"
+                                               data-target="#datetimepicker1"/>
+                                        <div class="input-group-append" data-target="#datetimepicker1"
+                                             data-toggle="datetimepicker">
+                                            <div class="input-group-text"><i class="material-icons">
+                                                calendar_today
+                                            </i></div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label class="col-form-label">일정 시작 시간</label>
+                                    <div class="input-group date" id="datetimepicker2" data-target-input="nearest">
+                                        <input type="text" class="form-control datetimepicker-input"
+                                               data-target="#datetimepicker2"/>
+                                        <div class="input-group-append" data-target="#datetimepicker2"
+                                             data-toggle="datetimepicker">
+                                            <div class="input-group-text"><i class="material-icons">
+                                                access_time
+                                            </i></div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="form-row">
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label class="col-form-label">일정 종료 날짜</label>
+                                    <div class="input-group date" id="datetimepicker3" data-target-input="nearest">
+                                        <input type="text" class="form-control datetimepicker-input"
+                                               data-target="#datetimepicker3"/>
+                                        <div class="input-group-append" data-target="#datetimepicker3"
+                                             data-toggle="datetimepicker">
+                                            <div class="input-group-text"><i class="material-icons">
+                                                calendar_today
+                                            </i></div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label class="col-form-label">일정 종료 시간</label>
+                                    <div class="input-group date" id="datetimepicker4" data-target-input="nearest">
+                                        <input type="text" class="form-control datetimepicker-input"
+                                               data-target="#datetimepicker4"/>
+                                        <div class="input-group-append" data-target="#datetimepicker4"
+                                             data-toggle="datetimepicker">
+                                            <div class="input-group-text"><i class="material-icons">
+                                                access_time
+                                            </i></div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="form-check form-check-inline">
+                                <input class="form-check-input" type="checkbox" id="inlineCheckbox1" value="option1">
+                                <label class="form-check-label" for="inlineCheckbox1">매월 반복</label>
+                            </div>
+                            <div class="form-check form-check-inline">
+                                <input class="form-check-input" type="checkbox" id="inlineCheckbox2" value="option2">
+                                <label class="form-check-label" for="inlineCheckbox2">하루 종일</label>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">취소</button>
+                    <button type="button" class="btn btn-primary">일정 만들기</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.22.2/moment.min.js"></script>
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/tempusdominus-bootstrap-4/5.0.1/js/tempusdominus-bootstrap-4.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js" integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1" crossorigin="anonymous"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js" integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM" crossorigin="anonymous"></script>
+    <script type="text/javascript" src="/javascripts/calendar.js"></script>
+</body>
