@@ -1,42 +1,43 @@
 'use strict';
-
-module.exports =(sequelize, DataTypes) => {
-    return sequelize.define('calendar', {
-      id: {
-        type: DataTypes.INTEGER.UNSIGNED,
-        primaryKey: true,
-        autoIncrement: true
-      },
-      title: {
-        type: DataTypes.STRING(20),
-        allowNull: false,
-      },
-      content: {
-        type: DataTypes.STRING(50),
-        allowNull: false,
-      },
-      start_date: {
-        type: DataTypes.DATEONLY,
-        allowNull: false,
-      },
-      end_date: {
-        type: DataTypes.DATEONLY,
-        allowNull: false,
-      },
-      start_time: {
-        type: DataTypes.DATE,
-        allowNull: true,
-      },
-      end_time: {
-        type: DataTypes.DATE,
-        allowNull: true,
-      },
-      all_day: {
-        type: DataTypes.BOOLEAN,
-        allowNull: false,
-        defaultValue: false
-      },
-    }, {
-        timestamps: true,
-    });
+module.exports = (sequelize, DataTypes) => {
+  const calendar = sequelize.define('calendars', {
+    title: {
+      type: DataTypes.STRING,
+      allowNull: false,
+    },
+    content: {
+      type: DataTypes.TEXT,
+      allowNull: false,
+    },
+    start_date: {
+      type: DataTypes.STRING,
+      allowNull: false,
+    },
+    end_date: {
+      type: DataTypes.STRING,
+      allowNull: false,
+    },
+    start_time: {
+      type: DataTypes.STRING,
+      allowNull: true,
+    },
+    end_time: {
+      type: DataTypes.STRING,
+      allowNull: true,
+    },
+    month_repeat: {
+      type: DataTypes.BOOLEAN,
+      allowNull: false,
+      defaultValue: false
+    },
+    all_day: {
+      type: DataTypes.BOOLEAN,
+      allowNull: false,
+      defaultValue: false
+    },
+  }, {});
+  calendar.associate = function(models) {
+    // associations can be defined here
+  };
+  return calendar;
 };

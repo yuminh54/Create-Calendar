@@ -10,7 +10,8 @@ body {
   align-items: center;
   box-sizing: border-box;
   font-family: "roboto", 'NotoSansKR', "Helvetica Neue", Helvetica, Arial, "맑은 고딕", malgun gothic, "돋움", Dotum, sans-serif, "Apple Color Emoji", "Noto Color Emoji";
-  color: #263747; }
+  color: #263747; 
+  height: 1000px;}
 
 a:hover {
   text-decoration: none; }
@@ -144,7 +145,7 @@ a:hover {
       font-size: 12px;
       line-height: 1.5;
       box-sizing: border-box;
-      color: #98A8B9;
+      color: #495057;
       z-index: 1; }
     .week .day:hover {
       cursor: pointer; }

@@ -21,9 +21,24 @@ $(document).ready(function() {
       var start = new Date(date.getFullYear(), date.getMonth()).getDay();
       var cal = [];
       var day = 1;
+
+      var flag = 0;
+      var color = 0;
+
+      var currentLast = new Date(currentDate.getFullYear(), currentDate.getMonth(), 0);
+      var preMonthDay = currentLast.getDate() - currentLast.getDay();
+
       for (var i = 0; i <= 6; i++) {
         if (i === 0) {
             cal.push(['<div class="week-day">']);
+        } else if (flag === 1){
+            break
+        } else if (day === 32) {
+            break
+        } else if (details.totalDays === 30 && day === 31) {
+            break
+        } else if (details.totalDays === 29 && day === 30) {
+            break
         } else {
             cal.push(['<div class="week">']);
         }
@@ -31,10 +46,15 @@ $(document).ready(function() {
           if (i === 0) {
             cal[i].push('<div class="day-name">' + details.weekDays[j] + '</div>');
           } else if (day > details.totalDays) {
-            cal[i].push('</div>');
+            color = 1
+            day = 1
+            cal[i].push('<div class="day"><h3 class="day-label" style="color: #98A8B9 !important;">' + day++ + '</h3></div>');
+            flag = 1
           } else {
             if (i === 1 && j < start) {
-              cal[i].push('<div class="day"><h3 class="day-label">&nbsp;</h3></div>');
+              cal[i].push('<div class="day"><h3 class="day-label" style="color: #98A8B9 !important;">'+ preMonthDay++ +'</h3></div>');
+            } else if (color === 1) {
+              cal[i].push('<div class="day"><h3 class="day-label" style="color: #98A8B9 !important;">' + day++ + '</h3></div>');
             } else {
               cal[i].push('<div class="day"><h3 class="day-label">' + day++ + '</h3></div>');
             }
@@ -49,11 +69,13 @@ $(document).ready(function() {
       $('#currentMonth').text(`${date.getFullYear()}년 ${details.months[date.getMonth()]}`);
       $('#year').text(date.getFullYear());
     }
+
     $('#today').click(function() {
         var todayDate = new Date()
         $('.monthly-calendar').text('');
         generateCalendar(todayDate);
-    })
+    });
+
     $('#previous').click(function() {
       $('.monthly-calendar').text('');
       if (currentDate.getMonth() === 0) {
@@ -64,6 +86,7 @@ $(document).ready(function() {
         generateCalendar(currentDate);
       }
     });
+
     $('#next').click(function() {
       $('.monthly-calendar').text('');
       if (currentDate.getMonth() === 11) {
@@ -74,6 +97,7 @@ $(document).ready(function() {
         generateCalendar(currentDate);
       }
     });
+
     generateCalendar(currentDate);
   });
 
@@ -89,7 +113,7 @@ $(function () {
     $('[data-toggle="popover"]').popover().on('inserted.bs.popover')
 });
 
-$('.week, .daily-calendar').click(function() {
+$('.monthly-calendar, .daily-calendar').click(function() {
     $('#registerSchedule').modal('show');
 });
 

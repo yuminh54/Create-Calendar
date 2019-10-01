@@ -1,9 +1,10 @@
 var express = require('express');
 var router = express.Router();
+const models = require('../models');
 
 /* GET home page. */
 router.get('/', function(req, res, next) {
-  res.render('calendar.ejs');
+  res.render('index', { title: 'programmers 과제 테스트 템플릿 - Node.js' });
 });
 
 module.exports = router;

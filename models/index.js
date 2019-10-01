@@ -34,6 +34,4 @@ Object.keys(db).forEach(modelName => {
 db.sequelize = sequelize;
 db.Sequelize = Sequelize;
 
-db.Calendar = require('./calendar.js')(sequelize, Sequelize);
-
 module.exports = db;
