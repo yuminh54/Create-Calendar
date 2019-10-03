@@ -37,6 +37,35 @@
             <div class="tab-pane active show" id="month" role="tabpanel" aria-labelledby="tab-month">
                 <div class="monthly-calendar"></div>
             </div>
+            <div class="tab-pane" id="day" role="tabpanel" aria-labelledby="tab-day">
+                <div class="daily-calendar">
+                    <span class="day-name">3일 화요일</span>
+                    <div class="event-consecutive event-start event-end" data-toggle="popover"
+                            data-html="true" data-placement="left" data-content='<div class="content-line"><div class="event-consecutive-marking"></div><div class="title"><h5>일정 1</h5><h7 class="reservation">2019년 9월 15일 – 17일</div>
+            </div><div class="content-line"><i class="material-icons">
+    notes
+    </i><div class="title"><h7 class="reservation">스케쥴 메모, 설명이 나타납니다.</div>'>연속 일정 1
+                    </div>
+                    <div class="event-consecutive event-start event-end" data-toggle="popover"
+                            data-html="true" data-placement="left" data-content='<div class="content-line"><div class="event-consecutive-marking"></div><div class="title"><h5>일정 1</h5><h7 class="reservation">2019년 9월 15일 – 17일</div>
+            </div><div class="content-line"><i class="material-icons">
+    notes
+    </i><div class="title"><h7 class="reservation">스케쥴 메모, 설명이 나타납니다.</div>'>연속 일정 2
+                    </div>
+                    <div class="event event-start event-end" data-toggle="popover"
+                            data-html="true" data-placement="left" data-content='<div class="content-line"><div class="event-marking"></div><div class="title"><h5>일정 1</h5><h7 class="reservation">2019년 9월 15일 – 17일<span class="reservation-time">⋅오후 2:00~ 3:00</span></div>
+            </div><div class="content-line"><i class="material-icons">
+    notes
+    </i><div class="title"><h7 class="reservation">스케쥴 메모, 설명이 나타납니다.</div>'>일반 일정 3
+                    </div>
+                    <div class="event-repeated event-start event-end" data-toggle="popover"
+                            data-html="true" data-placement="left" data-content='<div class="content-line"><div class="event-repeated-marking"></div><div class="title"><h5>일정 1</h5><h7 class="reservation">2019년 9월 15일 – 17일<span class="reservation-time">⋅오후 2:00~ 3:00</span><span class="repeat-message">⋅매월 반복</span></div>
+            </div><div class="content-line"><i class="material-icons">
+    notes
+    </i><div class="title"><h7 class="reservation">스케쥴 메모, 설명이 나타납니다.</div>'>반복 일정 1
+                    </div>
+                </div>
+            </div>
         </div>
     </div>
     <div class="modal fade" id="registerSchedule" tabindex="-1" role="dialog" aria-labelledby="registerScheduleLabel"
@@ -140,6 +169,7 @@
             </div>
         </div>
     </div>
+
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
     <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
     <!-- <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script> -->

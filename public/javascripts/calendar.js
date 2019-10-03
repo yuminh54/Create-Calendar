@@ -1,6 +1,5 @@
 $(document).ready(function() {
     var currentDate = new Date();
-
     // generateCalendar Function 시작
     async function generateCalendar(date) {
       function monthDays(month, year) {
@@ -21,12 +20,15 @@ $(document).ready(function() {
       var nowYear = date.getFullYear()
       var nowMonth = date.getMonth() + 1
 
-      // 전체 Calendar 완성 - .monthly-calendar에 요일/일 append
+      // Month Calendar 완성 - .monthly-calendar에 요일/일 append
       var details = {
         totalDays: date.monthDays(),
         weekDays: ['일', '월', '화', '수', '목', '금', '토'],
         months: ['1월', '2월', '3월', '4월', '5월', '6월', '7월', '8월', '9월', '10월', '11월', '12월'],
       };
+
+      $('#currentMonth').text(`${date.getFullYear()}년 ${details.months[date.getMonth()]}`);
+
       var start = new Date(date.getFullYear(), date.getMonth()).getDay();
       var cal = [];
       var day = 1;
@@ -96,13 +98,8 @@ $(document).ready(function() {
       }, []).join('');
       $('.monthly-calendar').append(cal);
 
-      // replaceAll
-      String.prototype.replaceAll = function(org, dest) {
-        return this.split(org).join(dest);
-      }
-
-      var dataCal = [] 
-      // 등록된 일정 Read
+      // ALL DATE Read (GET)
+      var allDate = [] 
       await axios({
         url: '/calendar/get',
         method: "GET",
@@ -111,16 +108,31 @@ $(document).ready(function() {
       .then(async function(res) {
         if (res.data.length > 0) {
           for (var i=0; i < res.data.length; i++) {
-            dataCal.push(res.data[i])
+            allDate.push(res.data[i])
           }
         } 
       });
+
+      // Tag 안에 id값을 위해 변환
+      function dayId(week){
+        var weekYear = week.getFullYear()
+        var weekMonth = week.getMonth() + 1
+        var weekDay = week.getDate() 
+        if (weekMonth < 10) {
+          weekMonth = '0' + weekMonth
+        }
+        if (weekDay < 10) {
+          weekDay = '0' + weekDay
+        }
+        var reWeek = weekMonth + '-' + weekDay + '-' + weekYear
+        return reWeek
+      };
+
+      // Calendar Task
       var schedule = []
-      if (dataCal.length > 0) {
-        for (var i=0; i < dataCal.length; i++) {
-          var data = dataCal[i]
-          data.start_date = data.start_date.replaceAll('/', '-')
-          data.end_date = data.end_date.replaceAll('/', '-')
+      if (allDate.length > 0) {
+        for (var i=0; i < allDate.length; i++) {
+          var data = allDate[i]
 
           // 연속 일정 - 기간 구하기
           var start = data.start_date.split('-')
@@ -131,26 +143,67 @@ $(document).ready(function() {
 
           // 요일 idx
           var day = start.getDay()
-          // 일주일 후 계산 (일요일부터 표시)
-          var nextWeek = new Date((Date.parse(start) + (7-day) * 1000 * 60 * 60 * 24))
           
           // 표시할 날짜 구간
           var dayCnt = Math.floor((end.getTime() - start.getTime()) / 1000 / 60 / 60 / 24)
 
           // 표시할 날짜 list
-          var totalday = []
+          var totalDay = []
 
-          if (day + dayCnt <= 7) {
-            totalday.push([data.start_date, dayCnt])
-            data['dayCnt'] = totalday
+          if (day + dayCnt < 7) {
+            totalDay.push([data.start_date, dayCnt + 1])
+            data['dayCnt'] = totalDay
             schedule.push(data)
           }
           else if (dayCnt <= 0) {
-            data['dayCnt'] = 0
+            data['dayCnt'] = [data.start_date, 1]
             schedule.push(data)
           } 
-          else if (day + dayCnt > 7) {
-            console.log(total)
+          else if (day + dayCnt >= 7) {
+            var startDay = 7 - day
+            var totalCal = dayCnt + 1
+            // 1st Week
+            totalDay.push([data.start_date, startDay])
+            var q = Math.floor(totalCal / 7)
+            var p = totalCal % 7
+            if (q > 0) {
+              // 2nd Week
+              if (q == 1) {
+                var nextWeek = new Date((Date.parse(start) + (7-day) * 1000 * 60 * 60 * 24))
+                var nextDay = dayId(nextWeek)
+                totalDay.push([nextDay, totalCal - startDay])
+              }
+              // 나머지 Week
+              else {
+                for (var k=1; k <= q; k++) {
+                  if (k === 1){
+                    var nextWeek = new Date((Date.parse(start) + (7-day) * 1000 * 60 * 60 * 24))
+                    var nextDay = dayId(nextWeek)
+                    totalDay.push([nextDay, 7])
+                  }
+                  else if (k !== q) {
+                    var nextWeek = new Date((Date.parse(nextWeek) + 7 * 1000 * 60 * 60 * 24))
+                    var nextDay = dayId(nextWeek)
+                    totalDay.push([nextDay, 7])
+                  }
+                  else {
+                    var nextWeek = new Date((Date.parse(nextWeek) + 7 * 1000 * 60 * 60 * 24))
+                    var nextDay = dayId(nextWeek)
+                    var lastDay = totalCal - (startDay + (7 * (q-1)))
+                    if (lastDay !== 0) {
+                      totalDay.push([nextDay, lastDay])
+                    }
+                  }
+                }
+              }
+            }
+            else {
+              var nextWeek = new Date((Date.parse(start) + (7-day) * 1000 * 60 * 60 * 24))
+              var nextDay = dayId(nextWeek)
+              totalDay.push([nextDay, totalCal - startDay])
+            }
+            data['dayCnt'] = totalDay
+            schedule.push(data)
           }
         }
       }
@@ -158,36 +211,149 @@ $(document).ready(function() {
       // 달력 표시
       if (schedule.length > 0) {
         for (var i=0; i < schedule.length; i++) {
-          var start = schedule[i].start_date
-          if (($(`#${start}`)).html()) {
-            // 연속 일정
-            if (schedule[i].dayCnt > 0) {
-              $(`#${start}`).after(`
-              <div class="event event-start event-end event-consecutive" data-span="${schedule[i].dayCnt}"
-                data-toggle="popover"
-                data-html="true">
-              ${schedule[i].title}
-              </div>`)
+          var showDay = schedule[i]
+          var showCal = showDay.dayCnt
+          var startDate = showDay.start_date
+          if (($(`#${startDate}`)).html()) {
+            // 하루종일, 하루(시간 지정), day + dayCnt < 7인 경우
+            if (showCal.length == 1) {
+              // 일반 일정
+              if (showCal[0][1] === 1) {
+                if (showDay.all_day === false) {
+                  $(`#${showCal[0][0]}`).after(`
+                  <div class="event event-start event-end" data-span="1" 
+                  data-toggle="popover"
+                  data-html="true" data-content='<div class="content-line">
+                  <div class="event-marking"></div><div class="title"><h5>${showDay.title}</h5>
+                  <h6 class="reservation">${showDay.start_date}</h6>
+                  <span class="reservation-time">${showDay.start_time} ~ ${showDay.end_time}</span></div>
+                  </div><div class="content-line"><i class="material-icons">
+                  notes
+                  </i><div class="title"><h6 class="reservation">${showDay.content}</div>'>
+                  ${showDay.title}
+                  </div>`
+                  )
+                }
+                else {
+                  $(`#${showCal[0][0]}`).after(`
+                    <div class="event event-start event-end" data-span="1" 
+                    data-toggle="popover"
+                    data-html="true" data-content='<div class="content-line">
+                    <div class="event-marking"></div><div class="title"><h5>${showDay.title}</h5>
+                    <h6 class="reservation">${showDay.start_date}</h6>
+                    <span class="reservation-time">하루종일</span></div>
+                    </div><div class="content-line"><i class="material-icons">
+                    notes
+                    </i><div class="title"><h6 class="reservation">${showDay.content}</div>'>
+                    ${showDay.title}
+                    </div>`)
+                }
+              } 
+              // 연속 일정
+              else {
+                $(`#${showCal[0][0]}`).after(`
+                  <div class="event event-start event-end event-consecutive" data-span="${showCal[0][1]}"
+                  data-toggle="popover"
+                  data-html="true" 
+                  data-content='<div class="content-line">
+                    <div class="event-consecutive-marking"></div>
+                    <div class="title">
+                      <h5>${showDay.title}</h5><h6 class="reservation">${showDay.start_date} - ${showDay.end_date}
+                    </div>
+                  </div>
+                  <div class="content-line"><i class="material-icons">notes</i>
+                  <div class="title"><h6 class="reservation">${showDay.content}</div>'>${showDay.title}</div>`)
+              }
             }
-            // 일반 일정 
+            // day + dayCnt >= 7인 경우
             else {
-              $(`#${start}`).after(`
-              <div class="event event-start event-end" data-span="1" 
-              data-toggle="popover"
-              data-html="true" data-content='<div class="content-line">
-              <div class="event-marking"></div><div class="title"><h5>${schedule[i].title}</h5>
-              <h7 class="reservation">2019년 9월 15일 – 17일</h7>
-              <span class="reservation-time">${schedule[i].start_time} ~ ${schedule[i].end_time}</span></div>
-              </div><div class="content-line"><i class="material-icons">
-              notes
-              </i><div class="title"><h7 class="reservation">${schedule[i].content}</div>'>
-              ${schedule[i].title}
-              </div>`)
+              for (var k=0; k < showCal.length; k++) {
+                if (k === 0) {
+                  $(`#${showCal[k][0]}`).after(`
+                  <div class="event event-start event-consecutive" data-span="${showCal[k][1]}"
+                  data-toggle="popover"
+                  data-html="true" 
+                  data-content='<div class="content-line">
+                    <div class="event-consecutive-marking"></div>
+                    <div class="title">
+                      <h5>${showDay.title}</h5><h6 class="reservation">${showDay.start_date} - ${showDay.end_date}
+                    </div>
+                  </div>
+                  <div class="content-line"><i class="material-icons">notes</i>
+                  <div class="title"><h6 class="reservation">${showDay.content}</div>'>${showDay.title}</div>`)
+                }
+                else if (k === (showCal.length - 1)) {
+                  $(`#${showCal[k][0]}`).after(`
+                  <div class="event event-end event-consecutive" data-span="${showCal[k][1]}"
+                  data-toggle="popover"
+                  data-html="true" 
+                  data-content='<div class="content-line">
+                    <div class="event-consecutive-marking"></div>
+                    <div class="title">
+                      <h5>${showDay.title}</h5><h6 class="reservation">${showDay.start_date} - ${showDay.end_date}
+                    </div>
+                  </div>
+                  <div class="content-line"><i class="material-icons">notes</i>
+                  <div class="title"><h6 class="reservation">${showDay.content}</div>'>${showDay.title}</div>`)
+                }
+                else {
+                  $(`#${showCal[k][0]}`).after(`
+                  <div class="event event-consecutive" data-span="${showCal[k][1]}"
+                  data-toggle="popover"
+                  data-html="true" 
+                  data-content='<div class="content-line">
+                    <div class="event-consecutive-marking"></div>
+                    <div class="title">
+                      <h5>${showDay.title}</h5><h6 class="reservation">${showDay.start_date} - ${showDay.end_date}
+                    </div>
+                  </div>
+                  <div class="content-line"><i class="material-icons">notes</i>
+                  <div class="title"><h6 class="reservation">${showDay.content}</div>'>${showDay.title}</div>`)
+                }
+              }
             }
           }
         }
       }
-      $('#currentMonth').text(`${date.getFullYear()}년 ${details.months[date.getMonth()]}`);
+      
+      // Daily Calendar 완성 - .daily-calendar
+      var todayYear = currentDate.getFullYear()
+      var todayMonth = currentDate.getMonth() + 1
+      var todayDay = currentDate.getDate()
+      var todayDate = currentDate.getDay()
+
+      var data = {
+        year: todayYear,
+        month: todayMonth,
+        day: todayDay
+      }
+
+      await axios({
+        url: '/calendar/dailyget',
+        method: "GET",
+        params: data,
+        dataType: "json",
+      })
+      .then(async function(res) {
+          console.log(res)
+      });
+      
+      console.log(todayYear, todayMonth, todayDay, todayDate)
+
+      // popover open
+      $(function () {
+        $('[data-toggle="popover"]').popover().on('inserted.bs.popover')
+      });
+
+      // 일정 등록 modal open
+      $('.week, .daily-calendar').click(function() {
+          $('#registerSchedule').modal('show');
+      });
+
+      // 동시 modal 방지
+      $(".event-consecutive, .event, .event-repeated").click(function(event) {
+        event.stopPropagation();
+      });
     }
     // generateCalendar Function 끝
 
@@ -231,19 +397,7 @@ $(function () {
 });
 
 $(function () {
-    $('#view li:first-child a').tab('show')
-});
-
-$(function () {
-    $('[data-toggle="popover"]').popover().on('inserted.bs.popover')
-});
-
-$('.monthly-calendar, .daily-calendar').click(function() {
-    $('#registerSchedule').modal('show');
-});
-
-$(".event-consecutive, .event, .event-repeated").click(function(event) {
-    event.stopPropagation();
+  $('#view li:first-child a').tab('show')
 });
 
 $(function () {
