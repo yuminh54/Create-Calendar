@@ -1,6 +1,5 @@
 $(document).ready(function() {
     var currentDate = new Date();
-    // generateCalendar Function 시작
     async function generateCalendar(date) {
       function monthDays(month, year) {
         var result = [];
@@ -439,7 +438,6 @@ $(document).ready(function() {
         event.stopPropagation();
       });
     }
-    // generateCalendar Function 끝
 
     // today 클릭시, 현재 month calendar로 이동
     $('#today').click(function() {
