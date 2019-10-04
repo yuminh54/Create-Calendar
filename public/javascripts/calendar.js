@@ -1,6 +1,5 @@
 $(document).ready(function() {
     var currentDate = new Date();
-    var temp = []
     // generateCalendar Function 시작
     async function generateCalendar(date) {
       function monthDays(month, year) {
@@ -253,54 +252,40 @@ $(document).ready(function() {
           changeEnd = period(changeEnd)
 
           var monthGet = date.getMonth() + 1
+          if (monthGet < 10) {
+            monthGet = '0' + monthGet
+          }
+          else if (monthGet > 12) {
+            monthGet = '01'
+          }
 
-          if (($(`#${startDate}`)).html() || ($(`#${endDate}`)).html()) {
-            // 하루종일, 하루(시간 지정), day + dayCnt < 7인 경우(연속일정, 반복일정)
-            if (showCal.length == 1) {
-              if (showCal[0][1] === 1) {
-                var calEvent = 'event'
-                var reTag = 'no'
-                var reMsg = '&nbsp'
-                var reTimeMsg = showDay.start_time + '~' + showDay.end_time
-                if (showDay.all_day === true) {
-                  reTimeMsg = '⋅ 하루종일'
-                }
-                if (showDay.month_repeat === true) {
-                  calEvent = 'event-repeated'
-                  reTag = 'repeat-message'
-                  reMsg = '⋅ 매월 반복'
-                }                
-                $(`#${showCal[0][0]}`).after(`
-                <div class="event event-start event-end ${calEvent}" data-span="1" 
-                data-toggle="popover" data-html="true" data-content='<div class="content-line">
-                <div class="${calEvent}-marking"></div> <div class="title"><h5>${showDay.title}</h5>
-                <h6 class="reservation">${changeStart}</h6> <span class="reservation-time">${reTimeMsg} </span>
-                <span class="${reTag}">${reMsg}</span></div></div>
-                <div class="content-line"><i class="material-icons">notes</i><div class="title"><h6 class="reservation">${showDay.content}</div>'>
-                ${showDay.title}
-                </div>`
-                )
-              } 
-              // 연속 일정 && 반복일정 
-              else {
-                var calEvent = 'event-consecutive'
-                var reTag = 'no'
-                var reMsg = '&nbsp'
-                if (showDay.month_repeat === true) {
-                  calEvent = 'event-repeated'
-                  reTag = 'repeat-message'
-                  reMsg = '⋅ 매월 반복'
-                }
-                $(`#${showCal[0][0]}`).after(`
-                  <div class="event event-start event-end ${calEvent}" data-span="${showCal[0][1]}"
-                  data-toggle="popover" data-html="true" data-content='<div class="content-line">
-                  <div class="${calEvent}-marking"></div> <div class="title"><h5>${showDay.title}</h5><h6 class="reservation">${changeStart} - ${changeEnd}
-                  <span class="${reTag}">${reMsg}</span></div></div>
-                  <div class="content-line"><i class="material-icons">notes</i>
-                  <div class="title"><h6 class="reservation">${showDay.content}</div>'>${showDay.title}</div>`
-                )
+          // 하루종일, 하루(시간 지정), day + dayCnt < 7인 경우(연속일정, 반복일정)
+          if (showCal.length == 1) {
+            if (showCal[0][1] === 1) {
+              var calEvent = 'event'
+              var reTag = 'no'
+              var reMsg = '&nbsp'
+              var reTimeMsg = showDay.start_time + '~' + showDay.end_time
+              if (showDay.all_day === true) {
+                reTimeMsg = '⋅ 하루종일'
               }
-            }
+              if (showDay.month_repeat === true) {
+                calEvent = 'event-repeated'
+                reTag = 'repeat-message'
+                reMsg = '⋅ 매월 반복'
+              }                
+              $(`#${showCal[0][0]}`).after(`
+              <div class="event event-start event-end ${calEvent}" data-span="1" 
+              data-toggle="popover" data-html="true" data-content='<div class="content-line">
+              <div class="${calEvent}-marking"></div> <div class="title"><h5>${showDay.title}</h5>
+              <h6 class="reservation">${changeStart}</h6> <span class="reservation-time">${reTimeMsg} </span>
+              <span class="${reTag}">${reMsg}</span></div></div>
+              <div class="content-line"><i class="material-icons">notes</i><div class="title"><h6 class="reservation">${showDay.content}</div>'>
+              ${showDay.title}
+              </div>`
+              )
+            } 
+            // 연속 일정 && 반복일정 
             else {
               var calEvent = 'event-consecutive'
               var reTag = 'no'
@@ -310,30 +295,49 @@ $(document).ready(function() {
                 reTag = 'repeat-message'
                 reMsg = '⋅ 매월 반복'
               }
-              for (var k=0; k < showCal.length; k++) {
-                var calStart = 'event-start'
-                var calEnd = 'event-end'
-                if (k === 0) {
-                  calEnd = ''
-                }
-                else if (k === (showCal.length - 1)) {
-                  calStart = ''
-                }
-                else {
-                  calStart = ''
-                  calEnd = ''
-                }
-                $(`#${showCal[k][0]}`).after(`
-                  <div class="event ${calStart} ${calEnd} ${calEvent}" data-span="${showCal[k][1]}"
-                  data-toggle="popover" data-html="true" data-content='<div class="content-line">
-                  <div class="${calEvent}-marking"></div>
-                  <div class="title"><h5>${showDay.title}</h5><h6 class="reservation">${changeStart} - ${changeEnd}
-                  <span class="${reTag}">${reMsg}</span></div></div>
-                  <div class="content-line"><i class="material-icons">notes</i>
-                  <div class="title"><h6 class="reservation">${showDay.content}</div>'>${showDay.title}</div>`
-                )
-              }
+              $(`#${showCal[0][0]}`).after(`
+                <div class="event event-start event-end ${calEvent}" data-span="${showCal[0][1]}"
+                data-toggle="popover" data-html="true" data-content='<div class="content-line">
+                <div class="${calEvent}-marking"></div> <div class="title"><h5>${showDay.title}</h5><h6 class="reservation">${changeStart} - ${changeEnd}
+                <span class="${reTag}">${reMsg}</span></div></div>
+                <div class="content-line"><i class="material-icons">notes</i>
+                <div class="title"><h6 class="reservation">${showDay.content}</div>'>${showDay.title}</div>`
+              )
             }
+          }
+          else {
+            var calEvent = 'event-consecutive'
+            var reTag = 'no'
+            var reMsg = '&nbsp'
+            if (showDay.month_repeat === true) {
+              calEvent = 'event-repeated'
+              reTag = 'repeat-message'
+              reMsg = '⋅ 매월 반복'
+            }
+            for (var k=0; k < showCal.length; k++) {
+              var calStart = 'event-start'
+              var calEnd = 'event-end'
+              if (k === 0) {
+                calEnd = ''
+              }
+              else if (k === (showCal.length - 1)) {
+                calStart = ''
+              }
+              else {
+                calStart = ''
+                calEnd = ''
+              }
+              $(`#${showCal[k][0]}`).after(`
+                <div class="event ${calStart} ${calEnd} ${calEvent}" data-span="${showCal[k][1]}"
+                data-toggle="popover" data-html="true" data-content='<div class="content-line">
+                <div class="${calEvent}-marking"></div>
+                <div class="title"><h5>${showDay.title}</h5><h6 class="reservation">${changeStart} - ${changeEnd}
+                <span class="${reTag}">${reMsg}</span></div></div>
+                <div class="content-line"><i class="material-icons">notes</i>
+                <div class="title"><h6 class="reservation">${showDay.content}</div>'>${showDay.title}</div>`
+              )
+            }
+            
           }
         }
       }
