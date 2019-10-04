@@ -77,7 +77,7 @@ a:hover {
       background-color: #44576C;
       border-color: #D7E2EB; }
 
-.monthly-calendar .day-name, .daily-calendar .day-name {
+.monthly-calendar .day-name, .daily-calendar .daily-name {
   font-size: 14px;
   line-height: 1.5;
   grid-row: 1;
@@ -87,7 +87,7 @@ a:hover {
   line-height: 48px;
   font-weight: 600; }
   @media (max-width: 767px) {
-    .monthly-calendar .day-name, .daily-calendar .day-name {
+    .monthly-calendar .day-name, .daily-calendar .daily-name {
       font-size: 13px; } }
 .monthly-calendar .event, .monthly-calendar .event-consecutive, .monthly-calendar .event-repeated, .daily-calendar .event, .daily-calendar .event-consecutive, .daily-calendar .event-repeated {
   margin-bottom: 4px;

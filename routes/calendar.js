@@ -11,7 +11,6 @@ router.get('/', function(req, res, next) {
 
 // Calendar에 등록된 일정 Read (해당 Month)
 router.get('/get', function(req, res, next) {
-    console.log(req.query)
     models.calendars.findAll()
     .then(function(results) {
         res.json(results);
@@ -55,11 +54,8 @@ router.get('/dailyget', function(req, res, next) {
 
 // 일정 Create
 router.post('/create', function(req, res, next) {
-    console.log(req.body)
-    var monthRepeat = false
-    var allDay = false
-    if (req.body.month_repeat === true) { monthRepeat = true }
-    if (req.body.all_day === true) { allDay = true }
+    var monthRepeat = req.body.month_repeat
+    var allDay = req.body.month_repeat
 
     String.prototype.replaceAll = function(org, dest) {
         return this.split(org).join(dest);
@@ -81,7 +77,6 @@ router.post('/create', function(req, res, next) {
         all_day: allDay
     })
     .then(result => {
-        console.log("SUCCESS")
         res.redirect('/calendar')
     })
     .catch (error => {

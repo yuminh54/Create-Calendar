@@ -60,30 +60,30 @@ $(document).ready(function() {
             color = 1
             day = 1
             flag = 1
-            cal[i].push('<div class="day"><h3 id="'+ (nowMonth+1) + '-' + 0 + day + '-' + nowYear + '"class="day-label" style="color: #98A8B9 !important;">' + day++ + '</h3></div>');
+            cal[i].push('<div class="day"><h3 id="'+ (nowMonth+1) + '-' + '0' + day + '-' + nowYear + '"class="day-label" style="color: #98A8B9 !important;">' + day++ + '</h3></div>');
           } else {
             if (i === 1 && j < start) {
               if ((nowMonth - 1) < 10) {
-                cal[i].push('<div class="day"><h3  id="'+ 0 + (nowMonth-1) + '-' + preMonthDay + '-' + nowYear + '"class="day-label" style="color: #98A8B9 !important;">'+ preMonthDay++ +'</h3></div>');
+                cal[i].push('<div class="day"><h3  id="'+ '0' + (nowMonth-1) + '-' + preMonthDay + '-' + nowYear + '"class="day-label" style="color: #98A8B9 !important;">'+ preMonthDay++ +'</h3></div>');
               } else {
                 cal[i].push('<div class="day"><h3  id="'+ (nowMonth-1) + '-' + preMonthDay + '-' + nowYear + '"class="day-label" style="color: #98A8B9 !important;">'+ preMonthDay++ +'</h3></div>');
               }
             } else if (color === 1) {
               if ((nowMonth + 1) < 10) {
-                cal[i].push('<div class="day"><h3 id="'+ 0 + (nowMonth+1) + '-' + 0 + day + '-' + nowYear + '"class="day-label" style="color: #98A8B9 !important;">' + day++ + '</h3></div>');
+                cal[i].push('<div class="day"><h3 id="'+ '0' + (nowMonth+1) + '-' + '0' + day + '-' + nowYear + '"class="day-label" style="color: #98A8B9 !important;">' + day++ + '</h3></div>');
               } else {
-                cal[i].push('<div class="day"><h3 id="'+ (nowMonth+1) + '-' + 0 + day + '-' + nowYear + '"class="day-label" style="color: #98A8B9 !important;">' + day++ + '</h3></div>');
+                cal[i].push('<div class="day"><h3 id="'+ (nowMonth+1) + '-' + '0' + day + '-' + nowYear + '"class="day-label" style="color: #98A8B9 !important;">' + day++ + '</h3></div>');
               }
             } else {
               if (nowMonth < 10) {
                 if (day < 10) {
-                  cal[i].push('<div class="day"><h3 id="'+ 0 + nowMonth + '-' + 0 + day + '-' + nowYear + '"class="day-label">' + day++ + '</h3></div>');  
+                  cal[i].push('<div class="day"><h3 id="'+ '0' + nowMonth + '-' + '0' + day + '-' + nowYear + '"class="day-label">' + day++ + '</h3></div>');  
                 } else {
-                  cal[i].push('<div class="day"><h3 id="'+ 0 + nowMonth + '-' + day + '-' + nowYear + '"class="day-label">' + day++ + '</h3></div>');
+                  cal[i].push('<div class="day"><h3 id="'+ '0' + nowMonth + '-' + day + '-' + nowYear + '"class="day-label">' + day++ + '</h3></div>');
                 }
               } else {
                 if (day < 10) {
-                  cal[i].push('<div class="day"><h3 id="'+ nowMonth + '-' + 0 + day + '-' + nowYear + '"class="day-label">' + day++ + '</h3></div>');  
+                  cal[i].push('<div class="day"><h3 id="'+ nowMonth + '-' + '0' + day + '-' + nowYear + '"class="day-label">' + day++ + '</h3></div>');  
                 } else {
                   cal[i].push('<div class="day"><h3 id="'+ nowMonth + '-' + day + '-' + nowYear + '"class="day-label">' + day++ + '</h3></div>');  
                 }
@@ -128,24 +128,47 @@ $(document).ready(function() {
         return reWeek
       };
 
+      // 기간 년/월/일 형식
+      function period(changeDate){
+        var resDate = changeDate[2] + '년 ' + changeDate[0] + '월 ' + changeDate[1] + '일'
+        return resDate
+      }
+
       // Calendar Task
       var schedule = []
+      
       if (allDate.length > 0) {
         for (var i=0; i < allDate.length; i++) {
           var data = allDate[i]
+          var monthGet = date.getMonth() + 1
+          var diffMonth = Number(data.end_date.slice(0, 2)) - Number(data.start_date.slice(0, 2))
+          var yearGet = date.getFullYear()
+          if (monthGet < 10) {
+            monthGet = '0' + monthGet
+          }
+          else if (monthGet > 12) {
+            monthGet = '01'
+            yearGet = yearGet + 1
+          }
 
-          // 연속 일정 - 기간 구하기
+          // 반복 check
+          if (data.month_repeat === true) {
+            data.start_date = monthGet + '-' + data.start_date.slice(3, 5) + '-' + yearGet
+            data.end_date = (Number(monthGet) + Number(diffMonth)) + '-' + data.end_date.slice(3, 5) + '-' + yearGet
+          }
+
+          // 기간 구하기
           var start = data.start_date.split('-')
           start = new Date(start[2], start[0]-1, start[1])
 
           var end = data.end_date.split('-')
           end = new Date(end[2], end[0]-1, end[1])
 
-          // 요일 idx
-          var day = start.getDay()
-          
           // 표시할 날짜 구간
           var dayCnt = Math.floor((end.getTime() - start.getTime()) / 1000 / 60 / 60 / 24)
+
+          // 요일 idx
+          var day = start.getDay()
 
           // 표시할 날짜 list
           var totalDay = []
@@ -214,102 +237,92 @@ $(document).ready(function() {
           var showDay = schedule[i]
           var showCal = showDay.dayCnt
           var startDate = showDay.start_date
-          if (($(`#${startDate}`)).html()) {
-            // 하루종일, 하루(시간 지정), day + dayCnt < 7인 경우
+          var endDate = showDay.end_date
+          
+          var changeStart = showDay.start_date.split('-')
+          changeStart = period(changeStart)
+          var changeEnd = showDay.end_date.split('-')
+          changeEnd = period(changeEnd)
+
+          if (($(`#${startDate}`)).html() || ($(`#${endDate}`)).html()) {
+            // 하루종일, 하루(시간 지정), day + dayCnt < 7인 경우(연속일정)
             if (showCal.length == 1) {
               // 일반 일정
               if (showCal[0][1] === 1) {
-                if (showDay.all_day === false) {
-                  $(`#${showCal[0][0]}`).after(`
-                  <div class="event event-start event-end" data-span="1" 
-                  data-toggle="popover"
-                  data-html="true" data-content='<div class="content-line">
-                  <div class="event-marking"></div><div class="title"><h5>${showDay.title}</h5>
-                  <h6 class="reservation">${showDay.start_date}</h6>
-                  <span class="reservation-time">${showDay.start_time} ~ ${showDay.end_time}</span></div>
-                  </div><div class="content-line"><i class="material-icons">
-                  notes
-                  </i><div class="title"><h6 class="reservation">${showDay.content}</div>'>
-                  ${showDay.title}
-                  </div>`
-                  )
+                var calEvent = 'event'
+                var reTag = 'no'
+                var reMsg = '&nbsp'
+                var reTimeMsg = showDay.start_time + '~' + showDay.end_time
+                if (showDay.all_day === true) {
+                  reTimeMsg = '⋅ 하루종일'
                 }
-                else {
-                  $(`#${showCal[0][0]}`).after(`
-                    <div class="event event-start event-end" data-span="1" 
-                    data-toggle="popover"
-                    data-html="true" data-content='<div class="content-line">
-                    <div class="event-marking"></div><div class="title"><h5>${showDay.title}</h5>
-                    <h6 class="reservation">${showDay.start_date}</h6>
-                    <span class="reservation-time">하루종일</span></div>
-                    </div><div class="content-line"><i class="material-icons">
-                    notes
-                    </i><div class="title"><h6 class="reservation">${showDay.content}</div>'>
-                    ${showDay.title}
-                    </div>`)
-                }
-              } 
-              // 연속 일정
-              else {
+                if (showDay.month_repeat === true) {
+                  calEvent = 'event-repeated'
+                  reTag = 'repeat-message'
+                  reMsg = '⋅ 매월 반복'
+                }                
                 $(`#${showCal[0][0]}`).after(`
-                  <div class="event event-start event-end event-consecutive" data-span="${showCal[0][1]}"
-                  data-toggle="popover"
-                  data-html="true" 
-                  data-content='<div class="content-line">
-                    <div class="event-consecutive-marking"></div>
-                    <div class="title">
-                      <h5>${showDay.title}</h5><h6 class="reservation">${showDay.start_date} - ${showDay.end_date}
-                    </div>
-                  </div>
+                <div class="event event-start event-end ${calEvent}" data-span="1" 
+                data-toggle="popover" data-html="true" data-content='<div class="content-line">
+                <div class="${calEvent}-marking"></div> <div class="title"><h5>${showDay.title}</h5>
+                <h6 class="reservation">${changeStart}</h6> <span class="reservation-time">${reTimeMsg} </span>
+                <span class="${reTag}">${reMsg}</span></div></div>
+                <div class="content-line"><i class="material-icons">notes</i><div class="title"><h6 class="reservation">${showDay.content}</div>'>
+                ${showDay.title}
+                </div>`
+                )
+              } 
+              // 연속 일정 && 반복일정 
+              else {
+                var calEvent = 'event-consecutive'
+                var reTag = 'no'
+                var reMsg = '&nbsp'
+                if (showDay.month_repeat === true) {
+                  calEvent = 'event-repeated'
+                  reTag = 'repeat-message'
+                  reMsg = '⋅ 매월 반복'
+                }
+                $(`#${showCal[0][0]}`).after(`
+                  <div class="event event-start event-end ${calEvent}" data-span="${showCal[0][1]}"
+                  data-toggle="popover" data-html="true" data-content='<div class="content-line">
+                  <div class="${calEvent}-marking"></div> <div class="title"><h5>${showDay.title}</h5><h6 class="reservation">${changeStart} - ${changeEnd}
+                  <span class="${reTag}">${reMsg}</span></div></div>
                   <div class="content-line"><i class="material-icons">notes</i>
-                  <div class="title"><h6 class="reservation">${showDay.content}</div>'>${showDay.title}</div>`)
+                  <div class="title"><h6 class="reservation">${showDay.content}</div>'>${showDay.title}</div>`
+                )
               }
             }
-            // day + dayCnt >= 7인 경우
             else {
+              var calEvent = 'event-consecutive'
+              var reTag = 'no'
+              var reMsg = '&nbsp'
+              if (showDay.month_repeat === true) {
+                calEvent = 'event-repeated'
+                reTag = 'repeat-message'
+                reMsg = '⋅ 매월 반복'
+              }
               for (var k=0; k < showCal.length; k++) {
+                var calStart = 'event-start'
+                var calEnd = 'event-end'
                 if (k === 0) {
-                  $(`#${showCal[k][0]}`).after(`
-                  <div class="event event-start event-consecutive" data-span="${showCal[k][1]}"
-                  data-toggle="popover"
-                  data-html="true" 
-                  data-content='<div class="content-line">
-                    <div class="event-consecutive-marking"></div>
-                    <div class="title">
-                      <h5>${showDay.title}</h5><h6 class="reservation">${showDay.start_date} - ${showDay.end_date}
-                    </div>
-                  </div>
-                  <div class="content-line"><i class="material-icons">notes</i>
-                  <div class="title"><h6 class="reservation">${showDay.content}</div>'>${showDay.title}</div>`)
+                  calEnd = ''
                 }
                 else if (k === (showCal.length - 1)) {
-                  $(`#${showCal[k][0]}`).after(`
-                  <div class="event event-end event-consecutive" data-span="${showCal[k][1]}"
-                  data-toggle="popover"
-                  data-html="true" 
-                  data-content='<div class="content-line">
-                    <div class="event-consecutive-marking"></div>
-                    <div class="title">
-                      <h5>${showDay.title}</h5><h6 class="reservation">${showDay.start_date} - ${showDay.end_date}
-                    </div>
-                  </div>
-                  <div class="content-line"><i class="material-icons">notes</i>
-                  <div class="title"><h6 class="reservation">${showDay.content}</div>'>${showDay.title}</div>`)
+                  calStart = ''
                 }
                 else {
-                  $(`#${showCal[k][0]}`).after(`
-                  <div class="event event-consecutive" data-span="${showCal[k][1]}"
-                  data-toggle="popover"
-                  data-html="true" 
-                  data-content='<div class="content-line">
-                    <div class="event-consecutive-marking"></div>
-                    <div class="title">
-                      <h5>${showDay.title}</h5><h6 class="reservation">${showDay.start_date} - ${showDay.end_date}
-                    </div>
-                  </div>
-                  <div class="content-line"><i class="material-icons">notes</i>
-                  <div class="title"><h6 class="reservation">${showDay.content}</div>'>${showDay.title}</div>`)
+                  calStart = ''
+                  calEnd = ''
                 }
+                $(`#${showCal[k][0]}`).after(`
+                  <div class="event ${calStart} ${calEnd} ${calEvent}" data-span="${showCal[k][1]}"
+                  data-toggle="popover" data-html="true" data-content='<div class="content-line">
+                  <div class="${calEvent}-marking"></div>
+                  <div class="title"><h5>${showDay.title}</h5><h6 class="reservation">${changeStart} - ${changeEnd}
+                  <span class="${reTag}">${reMsg}</span></div></div>
+                  <div class="content-line"><i class="material-icons">notes</i>
+                  <div class="title"><h6 class="reservation">${showDay.content}</div>'>${showDay.title}</div>`
+                )
               }
             }
           }
@@ -317,10 +330,14 @@ $(document).ready(function() {
       }
       
       // Daily Calendar 완성 - .daily-calendar
-      var todayYear = currentDate.getFullYear()
-      var todayMonth = currentDate.getMonth() + 1
-      var todayDay = currentDate.getDate()
-      var todayDate = currentDate.getDay()
+      var todayYear = date.getFullYear()
+      var todayMonth = date.getMonth() + 1
+      var todayDay = date.getDate()
+      var todayDate = date.getDay()
+      todayDate = details.weekDays[todayDate]
+
+      // today
+      $('.daily-name').text(`${todayDay}일 ${todayDate}요일`)
 
       var data = {
         year: todayYear,
@@ -328,6 +345,7 @@ $(document).ready(function() {
         day: todayDay
       }
 
+      var dailyData = []
       await axios({
         url: '/calendar/dailyget',
         method: "GET",
@@ -335,19 +353,72 @@ $(document).ready(function() {
         dataType: "json",
       })
       .then(async function(res) {
-          console.log(res)
+          dailyData = res.data
       });
-      
-      console.log(todayYear, todayMonth, todayDay, todayDate)
+
+      if (dailyData.length > 0) {
+        for(var i=0; i < dailyData.length; i++){
+          var dailyDay = dailyData[i]
+
+          var dailyStart = dailyDay.start_date.split('-')
+          var startChange = period(dailyStart)
+
+          var dailyEnd = dailyDay.end_date.split('-')
+          var endChange = period(dailyEnd)
+
+          dailyStart = new Date(dailyStart[2], dailyStart[0]-1, dailyStart[1])
+          dailyEnd = new Date(dailyEnd[2], dailyEnd[0]-1, dailyEnd[1])
+          var dailyCnt = Math.floor((dailyEnd.getTime() - dailyStart.getTime()) / 1000 / 60 / 60 / 24)
+
+          var reCal = ''
+          var reTimeMsg = dailyDay.start_time + '~' + dailyDay.end_time
+          var reDate = startChange + '–' + endChange
+          var reTag = 'no'
+          var reMsg = ''
+
+          if (dailyCnt <= 0 && dailyDay.all_day === true) {
+            reCal = 'event'
+            reDate = startChange
+            reTimeMsg = '⋅ 하루종일'
+          }
+          else if (dailyCnt <= 0 && dailyDay.all_day === false) {
+            reCal = 'event'
+            reDate = startChange
+          }
+          else if (dailyCnt >= 0 && dailyDay.month_repeat === true) {
+            reCal = 'event-repeated'
+            reTag = 'repeat-message'
+            reMsg = '⋅ 매월 반복'
+          } 
+          else if (dailyCnt > 0 && dailyDay.month_repeat === false) {
+            reCal = 'event-consecutive'
+          }
+
+          $('.daily-schedule').append(`<div class="${reCal} event-start event-end" data-toggle="popover"
+          data-html="true" data-placement="left" data-content='<div class="content-line">
+          <div class="${reCal}-marking"></div><div class="title"><h5>${dailyDay.title}</h5><h6 class="reservation">${reDate}
+          <span class="reservation-time">${reTimeMsg}</span><span class="${reTag}">${reMsg}</span></div>
+          </div><div class="content-line"><i class="material-icons">notes</i>
+          <div class="title"><h6 class="reservation">${dailyDay.content}</div>'>${dailyDay.title}</div>`
+          )
+        }
+      }
 
       // popover open
       $(function () {
         $('[data-toggle="popover"]').popover().on('inserted.bs.popover')
       });
 
+      String.prototype.replaceAll = function(org, dest) {
+        return this.split(org).join(dest);
+      }
+
       // 일정 등록 modal open
-      $('.week, .daily-calendar').click(function() {
-          $('#registerSchedule').modal('show');
+      $('.week, .daily-calendar').click(function(e) {
+        var todayId = e.target.id
+        todayId = todayId.replaceAll('-', '/')
+        $('#start-date-picker').val(todayId)
+        $('#registerSchedule').modal('show')
       });
 
       // 동시 modal 방지
@@ -359,35 +430,47 @@ $(document).ready(function() {
 
     // today 클릭시, 현재 month calendar로 이동
     $('#today').click(function() {
-        var todayDate = new Date()
+        currentDate = new Date()
         $('.monthly-calendar').text('');
-        generateCalendar(todayDate);
+        $('.daily-schedule').text('');
+        generateCalendar(currentDate);
     });
 
-    // '<' 클릭시, 이전 month calendar로 이동
+    // '<' 클릭시, 이전 calendar로 이동
     $('#previous').click(function() {
       $('.monthly-calendar').text('');
-      if (currentDate.getMonth() === 0) {
-        currentDate = new Date(currentDate.getFullYear() - 1, 11);
+      $('.daily-schedule').text('');
+      if ($( '.nav-link' ).attr( 'aria-selected' ) === 'true') {
+        if (currentDate.getMonth() === 0) {
+          currentDate = new Date(currentDate.getFullYear() - 1, 11);
+        } else {
+          currentDate = new Date(currentDate.getFullYear(), currentDate.getMonth() - 1)
+        }
         generateCalendar(currentDate);
-      } else {
-        currentDate = new Date(currentDate.getFullYear(), currentDate.getMonth() - 1)
+      }
+      else {
+        currentDate = new Date(currentDate.getFullYear(), currentDate.getMonth(), Number(currentDate.getDate()) - 1)
         generateCalendar(currentDate);
       }
     });
 
-    // '>' 클릭시, 이전 month calendar로 이동
+    // '>' 클릭시, 다음 calendar로 이동
     $('#next').click(function() {
       $('.monthly-calendar').text('');
-      if (currentDate.getMonth() === 11) {
-        currentDate = new Date(currentDate.getFullYear() + 1, 0);
-        generateCalendar(currentDate);
-      } else {
-        currentDate = new Date(currentDate.getFullYear(), currentDate.getMonth() + 1)
+      $('.daily-schedule').text('');
+      if ($( '.nav-link' ).attr( 'aria-selected' ) === 'true') {
+        if (currentDate.getMonth() === 11) {
+          currentDate = new Date(currentDate.getFullYear() + 1, 0);
+        } else {
+          currentDate = new Date(currentDate.getFullYear(), currentDate.getMonth() + 1)
+        }
         generateCalendar(currentDate);
       }
+      else {
+        currentDate = new Date(currentDate.getFullYear(), currentDate.getMonth(), Number(currentDate.getDate()) + 1)
+        generateCalendar(currentDate)
+      }
     });
-
     // 현재 month 달력 보여주기 (초기 화면)
     generateCalendar(currentDate);
   });
@@ -416,4 +499,14 @@ $(function () {
     $('#datetimepicker4').datetimepicker({
         format: 'LT'
     });
+});
+
+$('#inlineCheckbox2').click(function() {
+  if ($('#inlineCheckbox2').is(":checked")) {
+    $('[name="start_time"]').attr("readonly", true);
+    $('[name="end_time"]').attr("readonly", true);
+  } else {
+    $('[name="start_time"]').attr("readonly", false);
+    $('[name="end_time"]').attr("readonly", false);
+  }
 });
