@@ -1,5 +1,6 @@
 $(document).ready(function() {
     var currentDate = new Date();
+    var temp = []
     // generateCalendar Function 시작
     async function generateCalendar(date) {
       function monthDays(month, year) {
@@ -166,7 +167,6 @@ $(document).ready(function() {
 
           // 표시할 날짜 구간
           var dayCnt = Math.floor((end.getTime() - start.getTime()) / 1000 / 60 / 60 / 24)
-
           // 요일 idx
           var day = start.getDay()
 
@@ -191,10 +191,18 @@ $(document).ready(function() {
             var p = totalCal % 7
             if (q > 0) {
               // 2nd Week
-              if (q == 1) {
+              if (q === 1) {
                 var nextWeek = new Date((Date.parse(start) + (7-day) * 1000 * 60 * 60 * 24))
                 var nextDay = dayId(nextWeek)
-                totalDay.push([nextDay, totalCal - startDay])
+                if (totalCal - startDay > 7) {
+                  totalDay.push([nextDay, 7])
+                  nextWeek = new Date((Date.parse(nextWeek) + 7 * 1000 * 60 * 60 * 24))
+                  nextDay = dayId(nextWeek)
+                  totalDay.push([nextDay, (totalCal - startDay) - 7])
+                }
+                else {
+                  totalDay.push([nextDay, totalCal - startDay])
+                }
               }
               // 나머지 Week
               else {
@@ -244,10 +252,11 @@ $(document).ready(function() {
           var changeEnd = showDay.end_date.split('-')
           changeEnd = period(changeEnd)
 
+          var monthGet = date.getMonth() + 1
+
           if (($(`#${startDate}`)).html() || ($(`#${endDate}`)).html()) {
-            // 하루종일, 하루(시간 지정), day + dayCnt < 7인 경우(연속일정)
+            // 하루종일, 하루(시간 지정), day + dayCnt < 7인 경우(연속일정, 반복일정)
             if (showCal.length == 1) {
-              // 일반 일정
               if (showCal[0][1] === 1) {
                 var calEvent = 'event'
                 var reTag = 'no'
