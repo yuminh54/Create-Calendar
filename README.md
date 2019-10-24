@@ -35,16 +35,19 @@
 
 ## 4. 기능
 
+> public/javascripts/calendar.js file에 calendar 기능을 위한 거의 모든 code가 작성되어있습니다.
+
 1. #### **전체 calendar 생성**
 
    * 전체 Calendar를 만들기 위하여 generateCalendar 함수를 생성하였고, 비동기를 동기 처리 하기 위하여 **async/await를 사용**하였다.
 
    ```javascript
+   // public/javascripts/calendar.js
    async function generateCalendar(date)
-   ```
-
-   * `<`를 클릭하면 이전 달로 이동하며, `>`를 클릭하면 다음 달로 이동한다.
-
+```
+   
+* `<`를 클릭하면 이전 달로 이동하며, `>`를 클릭하면 다음 달로 이동한다.
+   
    ```javascript
    // '<' 클릭시, 이전 calendar로 이동
    $('#previous').click(function() {
@@ -55,10 +58,10 @@
    $('#next').click(function() {
    	...
    });
-   ```
-
-   * Calendar 생성 완료
-
+```
+   
+* Calendar 생성 완료
+   
    <img width="863" alt="스크린샷 2019-10-24 오후 4 05 06" src="https://user-images.githubusercontent.com/45961217/67461349-12987300-f678-11e9-9629-0fbb0b04aadd.png">
 
 
