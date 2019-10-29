@@ -16,7 +16,7 @@
 
 ## 2. 사용 기술
 
-* Node.js + express.js + sequelize.js + mysql + jquery + async/await
+* Node.js + express.js + sequelize.js + mysql + javascript +jquery
 
 * Node.js의 ORM모듈인 sequelize.js를 사용
   * 코딩의 반복적인 부분을 줄일 수 있고 SQL의 의존적인 코딩에서 벗어나 생산적인 코딩이 가능하며 유지보수가 편리하기 때문에 사용함
